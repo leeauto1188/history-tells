@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>History Tells — 以史鉴今</title>
+<meta name="description" content="每日一课，以史鉴今。History Tells 为你精选历史上的今天。" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,500;0,700;1,300;1,500&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Serif+SC:wght@400;600;700;900&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #FFFBF5;
+  --bg-card: #FFFFFF;
+  --bg-muted: #FDF6ED;
+  --text-primary: #1A1206;
+  --text-secondary: #5C4A2E;
+  --text-muted: #9C8B70;
+  --accent: #B45309;
+  --accent-warm: #D97706;
+  --accent-light: #FBBF24;
+  --accent-bg: #FEF3C7;
+  --accent-bg-deep: #FDE68A;
+  --border: #EDE5D8;
+  --border-light: #F5EFE4;
+  --shadow-sm: 0 1px 2px rgba(26,18,6,0.04);
+  --shadow-md: 0 2px 8px rgba(26,18,6,0.06), 0 1px 2px rgba(26,18,6,0.04);
+  --shadow-lg: 0 4px 24px rgba(26,18,6,0.08), 0 2px 8px rgba(26,18,6,0.04);
+  --radius: 12px;
+  --radius-lg: 16px;
+  --heading: 'Cormorant Garamond', 'Noto Serif SC', serif;
+  --body: 'Crimson Pro', 'Noto Serif SC', serif;
+  --label: 'Cinzel', 'Inter', serif;
+  --sans: 'Inter', -apple-system, sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--body);
+  background: var(--bg);
+  color: var(--text-primary);
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: var(--accent-bg-deep); color: var(--text-primary); }
+#root { min-height: 100vh; }
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+.anim-up { animation: fadeInUp 0.6s cubic-bezier(0.22,1,0.36,1) forwards; opacity: 0; }
+.anim-scale { animation: scaleIn 0.5s cubic-bezier(0.22,1,0.36,1) forwards; opacity: 0; }
+@media (prefers-reduced-motion: reduce) { .anim-up, .anim-scale { animation: none; opacity: 1; } }
+
+/* ── Header ── */
+.header {
+  border-bottom: 1px solid var(--border);
+  background: rgba(255,251,245,0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  position: sticky; top: 0; z-index: 100;
+}
+.header-inner {
+  max-width: 1200px; margin: 0 auto; padding: 14px 32px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.logo { display: flex; align-items: center; gap: 12px; }
+.logo-mark {
+  width: 36px; height: 36px; border-radius: 8px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-warm));
+  display: flex; align-items: center; justify-content: center;
+}
+.logo-mark svg { width: 18px; height: 18px; color: #fff; }
+.logo-text {
+  font-family: var(--label); font-weight: 600; font-size: 13px;
+  letter-spacing: 2.5px; text-transform: uppercase; color: var(--text-primary);
+}
+.header-date {
+  font-family: var(--sans); font-size: 13px; color: var(--text-muted);
+}
+
+/* ── Main Grid ── */
+.main-grid {
+  max-width: 1200px; margin: 0 auto; padding: 40px 32px 80px;
+  display: grid; grid-template-columns: 300px 1fr; gap: 48px; align-items: start;
+}
+
+/* ── Sidebar ── */
+.sidebar { position: sticky; top: 80px; }
+
+/* Calendar — Skeuomorphic Wall Calendar */
+.cal-card {
+  position: relative;
+  background: #FFFEF9;
+  border-radius: 4px 4px 6px 6px;
+  box-shadow:
+    0 1px 1px rgba(0,0,0,0.04),
+    0 4px 8px rgba(0,0,0,0.06),
+    0 12px 28px rgba(0,0,0,0.08),
+    0 0 0 1px rgba(0,0,0,0.03);
+  overflow: visible;
+}
+/* Subtle paper texture via noise */
+.cal-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  border-radius: inherit;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 28px,
+    rgba(200,190,170,0.04) 28px,
+    rgba(200,190,170,0.04) 29px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+/* Page curl bottom-right */
+.cal-card::after {
+  content: '';
+  position: absolute; bottom: 0; right: 0;
+  width: 28px; height: 28px;
+  background: linear-gradient(135deg, #FFFEF9 45%, #EDE5D8 50%, #D6CBBB 55%, #C4B8A4 100%);
+  border-radius: 0 0 6px 0;
+  box-shadow: -2px -2px 4px rgba(0,0,0,0.04);
+  z-index: 2;
+  clip-path: polygon(100% 0%, 100% 100%, 0% 100%);
+}
+
+/* Spiral binding */
+.cal-rings {
+  position: relative;
+  height: 20px;
+  background: linear-gradient(180deg, #E8E0D0 0%, #F0EAE0 40%, #FFFEF9 100%);
+  border-radius: 4px 4px 0 0;
+  border-bottom: 1px solid #DDD5C8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  padding: 0 32px;
+  z-index: 3;
+}
+.cal-ring {
+  width: 14px; height: 14px;
+  border: 2.5px solid #8B7D6B;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #A39585 0%, #C4B8A4 40%, #D6CBBB 100%);
+  box-shadow:
+    0 1px 2px rgba(0,0,0,0.15),
+    inset 0 1px 1px rgba(255,255,255,0.3);
+  position: relative;
+}
+.cal-ring::after {
+  content: '';
+  position: absolute; top: 2px; left: 2px;
+  width: 5px; height: 3px;
+  background: rgba(255,255,255,0.35);
+  border-radius: 50%;
+}
+
+/* Month header — red banner */
+.cal-head {
+  padding: 20px 22px 14px;
+  background: linear-gradient(135deg, #B91C1C 0%, #DC2626 50%, #B91C1C 100%);
+  position: relative;
+  overflow: hidden;
+}
+.cal-head::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, transparent 60%);
+  pointer-events: none;
+}
+.cal-head::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: rgba(0,0,0,0.15);
+}
+.cal-title {
+  font-family: var(--heading); font-size: 28px; font-weight: 700;
+  line-height: 1.2; color: #FFFFFF;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  position: relative;
+}
+.cal-sub {
+  font-family: var(--sans); font-size: 12px; color: rgba(255,255,255,0.75);
+  margin-top: 2px; letter-spacing: 0.06em; position: relative;
+}
+
+/* Days area */
+.cal-body {
+  padding: 14px 16px 18px;
+  position: relative;
+  z-index: 1;
+}
+.cal-wk {
+  display: grid; grid-template-columns: repeat(7,1fr); margin-bottom: 8px;
+}
+.cal-wk span {
+  font-family: var(--sans); font-size: 10px; font-weight: 500;
+  color: #9C8B70; text-align: center; padding: 4px 0;
+  letter-spacing: 0.5px;
+}
+.cal-days { display: grid; grid-template-columns: repeat(7,1fr); gap: 2px; }
+.cal-d {
+  aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+  font-family: var(--sans); font-size: 13px; font-weight: 400;
+  color: #4A3F30; border-radius: 50%; position: relative;
+  transition: background 0.15s;
+}
+.cal-d.dim { color: #D1C9BC; }
+.cal-d.ev { font-weight: 600; color: var(--accent); }
+.cal-d.ev::after {
+  content: ''; position: absolute; bottom: 2px;
+  width: 4px; height: 4px; border-radius: 50%; background: var(--accent-warm);
+}
+.cal-d.now {
+  background: #DC2626; color: #fff; font-weight: 700;
+  box-shadow: 0 2px 8px rgba(220,38,38,0.4), 0 0 0 2px rgba(220,38,38,0.12);
+}
+.cal-d.now::after { display: none; }
+
+/* Bottom tear edge */
+.cal-tear {
+  height: 6px;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0px,
+    transparent 5px,
+    #FFFEF9 5px,
+    #FFFEF9 6px,
+    transparent 6px,
+    transparent 8px,
+    rgba(200,190,170,0.2) 8px,
+    rgba(200,190,170,0.2) 9px,
+    transparent 9px,
+    transparent 12px
+  );
+  border-top: 1px dashed #D6CBBB;
+  margin: 0 12px;
+  opacity: 0.7;
+}
+
+/* Quote */
+.quote-card {
+  margin-top: 20px; background: var(--bg-muted);
+  border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 22px 24px;
+}
+.quote-card p.qt { font-family: var(--heading); font-size: 17px; font-weight: 500; font-style: italic; color: var(--text-secondary); line-height: 1.6; }
+.quote-card p.qa { font-family: var(--sans); font-size: 12px; color: var(--text-muted); margin-top: 10px; }
+
+/* Stats */
+.stats { margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.stat {
+  background: var(--bg-card); border: 1px solid var(--border-light);
+  border-radius: var(--radius); padding: 16px; text-align: center;
+}
+.stat-n { font-family: var(--heading); font-size: 28px; font-weight: 700; color: var(--accent); line-height: 1; }
+.stat-l { font-family: var(--sans); font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+
+/* ── Content ── */
+.content { min-width: 0; }
+
+.overline {
+  font-family: var(--label); font-size: 11px; font-weight: 600;
+  letter-spacing: 2.5px; text-transform: uppercase; color: var(--accent);
+  display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
+}
+.overline::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+.ev-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--sans); font-size: 12px; font-weight: 500; color: var(--accent);
+  background: var(--accent-bg); border: 1px solid var(--accent-bg-deep);
+  padding: 4px 14px; border-radius: 20px; margin-bottom: 16px;
+}
+.ev-badge svg { width: 12px; height: 12px; }
+
+.ev-title {
+  font-family: var(--heading); font-size: clamp(28px,3.5vw,40px);
+  font-weight: 700; line-height: 1.25; letter-spacing: -0.01em; max-width: 680px;
+}
+
+.ev-divider {
+  width: 48px; height: 3px; border-radius: 2px; margin-top: 20px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-warm));
+}
+
+/* Sections */
+.sec { margin-bottom: 36px; }
+.sec-label {
+  font-family: var(--label); font-size: 10px; font-weight: 600;
+  letter-spacing: 2.5px; text-transform: uppercase; color: var(--text-muted);
+  margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+}
+.sec-label svg { width: 14px; height: 14px; opacity: 0.5; }
+.sec-body p {
+  font-family: var(--body); font-size: 16.5px; color: var(--text-secondary);
+  line-height: 1.85; max-width: 640px;
+}
+.sec-body p + p { margin-top: 14px; }
+
+/* Figures */
+.figs { display: flex; flex-wrap: wrap; gap: 10px; }
+.fig {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 16px; background: var(--bg-muted);
+  border: 1px solid var(--border-light); border-radius: 10px;
+  font-family: var(--sans); font-size: 14px; font-weight: 500;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.fig:hover { border-color: var(--border); box-shadow: var(--shadow-sm); }
+.fig .role { font-weight: 400; color: var(--text-muted); font-size: 12px; }
+
+/* Insight */
+.insight {
+  background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 60%, rgba(253,230,138,0.2) 100%);
+  border: 1px solid #FDE68A; border-radius: var(--radius-lg);
+  padding: 28px; position: relative; overflow: hidden;
+}
+.insight::before {
+  content: ''; position: absolute; top: -20px; right: -20px;
+  width: 100px; height: 100px;
+  background: radial-gradient(circle, rgba(251,191,36,0.15) 0%, transparent 70%);
+  border-radius: 50%;
+}
+.insight p { font-family: var(--body); font-size: 16px; line-height: 1.85; color: #78350F; position: relative; }
+
+/* Reading */
+.reads { display: flex; flex-direction: column; gap: 8px; }
+.read-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 12px 16px; border-radius: var(--radius);
+  border: 1px solid transparent; transition: all 0.2s;
+}
+.read-item:hover { background: var(--bg-muted); border-color: var(--border-light); }
+.read-icon {
+  flex-shrink: 0; width: 32px; height: 32px; border-radius: 8px;
+  background: var(--accent-bg); display: flex; align-items: center; justify-content: center;
+}
+.read-icon svg { width: 16px; height: 16px; color: var(--accent); }
+.read-text { font-family: var(--body); font-size: 15px; color: var(--text-secondary); line-height: 1.5; }
+
+/* Hint banner */
+.hint-banner {
+  padding: 12px 20px; margin-bottom: 24px;
+  background: var(--accent-bg); border-radius: var(--radius);
+  border: 1px solid var(--accent-bg-deep);
+  font-family: var(--sans); font-size: 13px; color: #92400E;
+}
+
+/* Empty */
+.empty { text-align: center; padding: 80px 32px; }
+.empty-icon {
+  width: 64px; height: 64px; margin: 0 auto 20px; border-radius: 16px;
+  background: var(--bg-muted); display: flex; align-items: center; justify-content: center;
+}
+.empty-icon svg { width: 28px; height: 28px; color: var(--text-muted); }
+.empty h3 { font-family: var(--heading); font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+.empty p { font-family: var(--body); font-size: 15px; color: var(--text-muted); }
+
+/* Footer */
+.footer {
+  max-width: 1200px; margin: 0 auto; padding: 32px;
+  border-top: 1px solid var(--border); text-align: center;
+}
+.footer p { font-family: var(--sans); font-size: 12px; color: var(--text-muted); }
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .main-grid { grid-template-columns: 1fr; gap: 32px; padding: 24px 20px 60px; }
+  .sidebar { position: static; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .cal-card { grid-column: 1 / -1; max-width: 340px; }
+  .quote-card { margin-top: 0; }
+  .stats { margin-top: 0; }
+  .header-inner { padding: 12px 20px; }
+}
+@media (max-width: 540px) {
+  .sidebar { grid-template-columns: 1fr; }
+  .ev-title { font-size: 24px; }
+  .insight { padding: 20px; }
+}
+
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useMemo } = React;
+
+/* ─── Data ─── */
+const EVENTS = [
+  { month:1,day:1,year:"前45年",title:"儒略历正式启用——人类第一次统一时间",description:"凯撒大帝在天文学家索西琴尼的帮助下，以太阳年为基础制定了儒略历，取代了混乱的罗马旧历。这部历法将一年定为365.25天，每四年设一个闰年。\n\n在此之前，罗马历法极度混乱，祭司们甚至会为了延长盟友的执政期而随意插入月份。凯撒的改革不仅是天文学成就，更是中央集权对地方权力的一次胜利。\n\n儒略历此后使用了1600多年，直到1582年才被格里高利历修正。我们今天使用的日历，就是儒略历的后裔。",figures:[{name:"尤利乌斯·凯撒",role:"罗马独裁官"},{name:"索西琴尼",role:"天文学家"}],impact:"儒略历成为西方世界通用历法长达16个世纪，深刻影响了农业、宗教、商业和行政管理。统一的时间标准让跨区域协作成为可能。",insight:"标准的力量常被低估。从度量衡到互联网协议，谁定义了标准，谁就掌握了游戏规则。凯撒改历表面是科学行为，实质是权力行为——这与今天科技巨头争夺行业标准的逻辑一脉相承。",reading:["《凯撒：巨人的一生》— 阿德里安·戈兹沃西","纪录片《古罗马：一个帝国的兴起和衰亡》"]},
+  { month:1,day:8,year:"1942年",title:"霍金诞生——从渐冻人到宇宙之王",description:"斯蒂芬·霍金出生于英国牛津，恰好是伽利略逝世300周年。21岁被诊断出ALS，医生预言他只能再活两年。\n\n然而他不仅活了下来，还在轮椅上完成了一系列突破性工作：证明黑洞会发出辐射、提出宇宙无边界假说、撰写了销量超过千万册的《时间简史》。\n\n他用一根手指、一台语音合成器，成为了20世纪最著名的科学家之一。",figures:[{name:"斯蒂芬·霍金",role:"理论物理学家"}],impact:"霍金辐射的提出动摇了经典观念，引发了持续至今的「信息悖论」之争。《时间简史》让宇宙学走向大众。",insight:"身体的局限不等于思想的局限。在AI时代，当机器能替代大部分体力和事务性工作后，深度思考的能力变得更加珍贵。",reading:["《时间简史》— 斯蒂芬·霍金","《我的简史》— 斯蒂芬·霍金"]},
+  { month:1,day:27,year:"1945年",title:"奥斯维辛集中营解放——人类最黑暗的记忆",description:"苏联红军抵达奥斯维辛集中营时，迎接他们的是7000多名骨瘦如柴的幸存者。这座人类历史上最大的死亡工厂终于被打开。\n\n纳粹在这里系统性地屠杀了110万人，其中超过90%是犹太人。\n\n这一天后来被联合国定为「国际大屠杀纪念日」，提醒世界：文明的外衣之下，恶可以如此理性、如此高效。",figures:[{name:"鲁道夫·赫斯",role:"集中营指挥官"},{name:"普里莫·莱维",role:"幸存者/作家"}],impact:"直接推动了《世界人权宣言》和纽伦堡审判，确立了「反人类罪」的法律概念。",insight:"恶的平庸性——执行大屠杀的很多人并非恶魔，而是「服从命令」的普通人。在算法推荐、数据监控日益普及的今天，保持独立判断的能力，是这段历史给我们最重要的警示。",reading:["《如果这是一个人》— 普里莫·莱维","《艾希曼在耶路撒冷》— 汉娜·阿伦特"]},
+  { month:2,day:4,year:"2004年",title:"Facebook 上线——社交网络改写人类连接方式",description:"哈佛大学二年级学生扎克伯格在宿舍里上线了 thefacebook.com。起初只是一个校园社交工具。\n\n没人料到，这个简陋的网站会在20年内成长为拥有30亿用户的全球平台。它重新定义了「朋友」的含义，改变了信息传播方式，甚至影响了多国选举。",figures:[{name:"马克·扎克伯格",role:"创始人"},{name:"爱德华多·萨维林",role:"联合创始人"}],impact:"开创了社交网络时代，催生了注意力经济和数据驱动广告模式。",insight:"每个改变世界的产品，最初都只是解决一个小问题。创业的真谛不是宏大叙事，而是找到一个真实的痛点，然后让它自然生长。",reading:["《Facebook效应》— 大卫·柯克帕特里克","纪录片《社交困境》"]},
+  { month:2,day:14,year:"1876年",title:"电话专利之争——贝尔赢在两小时",description:"贝尔向美国专利局提交了电话专利申请。同一天，格雷也提交了类似装置的预告。贝尔早了仅仅两个小时。\n\n这场专利之争演变成超过600场官司。最终贝尔胜出，获得了「美国历史上最有价值的专利」。\n\n讽刺的是，贝尔本人对电话兴趣不大，他更热衷于聋哑人教育。",figures:[{name:"亚历山大·贝尔",role:"发明家"},{name:"伊莱沙·格雷",role:"竞争者"}],impact:"电话催生了AT&T，彻底改变了商业、军事和社会生活。",insight:"真正有价值的创新往往同时被多人独立发现——这说明创新更多取决于时代条件的成熟，而非单个天才的灵感。",reading:["《维多利亚时代的互联网》— 汤姆·斯坦迪奇"]},
+  { month:3,day:5,year:"1946年",title:"丘吉尔「铁幕演说」——冷战正式拉开序幕",description:"丘吉尔在美国密苏里州发表演讲：「从波罗的海到亚得里亚海，一幅铁幕已经降落。」\n\n这篇演讲标志着西方世界正式将苏联视为对手。「铁幕」此后成为冷战的代名词。\n\n斯大林对此强烈反弹。两个超级大国的对峙，从此长达近半个世纪。",figures:[{name:"温斯顿·丘吉尔",role:"英国前首相"},{name:"哈里·杜鲁门",role:"美国总统"}],impact:"为杜鲁门主义、马歇尔计划和北约成立铺平了舆论基础。世界进入长达45年的两极对抗。",insight:"叙事的力量不可小觑。「铁幕」这个意象一旦被创造出来，就塑造了几代人对世界的认知框架。在信息时代，谁掌握了叙事框架，谁就掌握了公众认知。",reading:["《铁幕》— 安妮·阿普尔鲍姆","《冷战》— 约翰·加迪斯"]},
+  { month:3,day:14,year:"1879年",title:"爱因斯坦诞生——「想象力比知识更重要」",description:"爱因斯坦出生于德国乌尔姆。他小时候并不被看好——说话晚、不合群、与老师关系紧张。\n\n1905年，26岁的他在专利局当职员期间，发表了四篇划时代论文——光电效应、布朗运动、狭义相对论和 E=mc²。被称为「奇迹年」。\n\n此后十年完成广义相对论，彻底颠覆了牛顿的物理学大厦。",figures:[{name:"阿尔伯特·爱因斯坦",role:"理论物理学家"}],impact:"相对论催生了核能、GPS定位、引力波探测等技术。E=mc² 既带来原子弹的恐怖，也开启了核能的和平利用。",insight:"爱因斯坦最大的武器不是数学能力，而是「思想实验」。这种从直觉出发、用想象力突破框架的方法，在AI辅助一切计算的今天，反而变得更加珍贵。",reading:["《爱因斯坦传》— 沃尔特·艾萨克森"]},
+  { month:4,day:7,year:"1348年",title:"布拉格查理大学成立——知识如何改变一座城市的命运",description:"神圣罗马帝国皇帝查理四世在布拉格创立了中欧第一所大学——查理大学。这不仅是一项教育举措，更是一次精心策划的城市升级工程。\n\n查理四世深知，一座拥有大学的城市将吸引学者、商人和工匠，形成知识与商业的正循环。布拉格因此从一个普通的波希米亚城镇跃升为欧洲的文化和政治中心。\n\n查理大学后来培养了宗教改革先驱胡斯等重要人物。一所大学，改变了整个中欧的知识版图。",figures:[{name:"查理四世",role:"神圣罗马帝国皇帝"}],impact:"成为中欧学术灯塔，此后海德堡、维也纳等大学纷纷效仿成立。也是胡斯运动的摇篮。",insight:"城市的竞争力归根结底是人才的竞争力。查理四世600多年前就明白的道理，今天依然适用——硅谷因斯坦福而兴，深圳因产业人才聚集而强。投资教育和人才，永远是回报率最高的长期策略。",reading:["《布拉格精神》— 伊凡·克里玛","《欧洲中世纪史》— 朱迪斯·本内特"]},
+  { month:4,day:4,year:"1949年",title:"北约成立——集体安全改写世界秩序",description:"美国、加拿大和十个西欧国家签署《北大西洋公约》。第五条规定：对任何成员国的攻击，视为对全体的攻击。\n\n这是美国在和平时期首次加入军事同盟。北约的成立是对苏联威胁的直接回应。\n\n六年后苏联组建华沙条约组织。两大军事集团的对峙将欧洲变成了巨大的军火库。",figures:[{name:"哈里·杜鲁门",role:"美国总统"},{name:"欧内斯特·贝文",role:"英国外交大臣"}],impact:"至今仍是全球最强大的军事联盟。2022年后芬兰和瑞典也申请加入。",insight:"同盟的价值不在于战时联合作战，而在于和平时期的威慑效果。生态联盟的核心价值不是合力进攻，而是让对手不敢轻举妄动。",reading:["《冷战》— 约翰·加迪斯"]},
+  { month:4,day:12,year:"1961年",title:"加加林飞天——人类第一次从太空凝视地球",description:"苏联宇航员加加林乘坐「东方一号」完成了绕地球一圈的飞行，历时108分钟。人类历史上第一次载人太空飞行。\n\n当加加林从太空俯瞰地球时，他说：「地球是蓝色的。多么美妙。」全人类第一次通过一个人的眼睛看到了自己星球的全貌。\n\n美国受到极大刺激，肯尼迪随后宣布十年内登月——阿波罗计划由此启动。",figures:[{name:"尤里·加加林",role:"宇航员"},{name:"谢尔盖·科罗廖夫",role:"火箭总设计师"}],impact:"直接引爆美苏太空竞赛，推动了卫星通讯、GPS、气象预报等技术发展。",insight:"竞争是创新最强的催化剂。今天的中美科技竞争，虽然让人不安，但客观上也在加速AI、量子计算等领域的突破。关键是如何将竞争维持在良性轨道上。",reading:["《太空竞赛》— 黛博拉·卡德伯里","纪录片《宇宙时代》"]},
+  { month:4,day:15,year:"1452年",title:"达·芬奇诞生——文艺复兴最完整的人类",description:"列奥纳多·达·芬奇出生于意大利托斯卡纳芬奇镇。他是公证员与农村女子的私生子，却成为了人类历史上最接近「全才」的人。\n\n他同时是画家、解剖学家、工程师、音乐家和发明家。他设计了直升机原型、太阳能装置、双层船体和早期计算器——全部比他的时代超前了至少三百年。他的解剖图谱直到今天仍是医学与艺术的双重范本。《蒙娜丽莎》和《最后的晚餐》成为人类文明的巅峰之作。\n\n他留下了超过七千页笔记，大多用镜像书写，生前几乎未曾发表。他死的时候，觉得自己一事无成。",figures:[{name:"列奥纳多·达·芬奇",role:"画家、发明家、解剖学家"},{name:"洛多维科·斯福尔扎",role:"米兰公爵，主要赞助人"}],impact:"达·芬奇将艺术与科学的界限彻底打通。他的解剖研究推动了医学发展；他的机械设计预示了现代工程学；他对光影的研究奠定了现代透视论的基础。",insight:"达·芬奇最大的秘密是对「连接」的痴迷——他能在解剖与绘画之间、在水流与发丝之间、在鸟翼与飞行器之间，看到别人看不到的共同规律。在AI时代，跨领域的综合能力正在变得比单领域深度更有价值。达·芬奇的时代已经过去，但「达·芬奇式」的思维方式从未过时。",reading:["《达·芬奇传》— 沃尔特·艾萨克森","《达·芬奇笔记》— 列奥纳多·达·芬奇"]},
+  { month:4,day:15,year:"1865年",title:"林肯遇刺——美国最漫长的一夜",description:"1865年4月14日深夜，林肯在华盛顿福特剧院观看演出时，被演员约翰·威尔克斯·布斯从背后枪击头部。翌日清晨7时22分，美国第16任总统宣告不治。\n\n刺杀发生在南北战争结束仅五天后。布斯是狂热的南方邦联同情者，他以为除掉林肯能为失败的邦联复仇——但他错了。林肯之死带来的是愤怒与清算，而非同情。\n\n林肯死后，重建计划失去了最关键的温和声音。他「对所有人宽厚，对任何人不怀恶意」的南方重建构想，被国会更激进的方案取代。美国的种族裂痕因此被推迟了整整一个世纪。",figures:[{name:"亚伯拉罕·林肯",role:"美国第16任总统"},{name:"约翰·威尔克斯·布斯",role:"刺客，舞台演员"}],impact:"林肯遇刺深刻改变了重建时代走向。没有他的领导，南方重建陷入僵局，最终催生了《吉姆·克劳》种族隔离法律，美国花了近百年才通过《民权法案》。",insight:"一位伟大领导者的缺席，有时比任何政策失误的代价都高。组织和系统对关键人物的过度依赖是普遍风险。林肯死后美国南方重建失败，根本原因是整个政治体系的推进力量只集中在一个人身上。",reading:["《政敌们的礼物》— 多丽丝·基恩斯·古德温","《美国内战史》— 谢尔比·福特"]},
+  { month:4,day:15,year:"1912年",title:"泰坦尼克号沉没——傲慢如何击沉不沉之船",description:"被誉为「永不沉没」的泰坦尼克号撞上冰山后沉没。2224人中1514人遇难。\n\n悲剧根源不是技术而是傲慢。设计师声称「不可能沉没」，因此只配备了一半救生艇。船长在收到冰山警告后仍全速航行。\n\n头等舱生还率62%，三等舱只有25%。一场海难残酷地映射出阶级社会的真实面貌。",figures:[{name:"爱德华·史密斯",role:"船长"},{name:"托马斯·安德鲁斯",role:"设计师"}],impact:"催生了国际海上人命安全公约（SOLAS），要求所有船舶配备足够救生设备。",insight:"「不可能失败」是最危险的想法。过度自信导致的风险管理缺失，是灾难最常见的前奏。为「不可能发生」的事情做准备，才是真正的专业主义。",reading:["《泰坦尼克号的最后一夜》— 沃尔特·洛德"]},
+  { month:4,day:25,year:"1859年",title:"苏伊士运河开工——一条水道改变世界贸易",description:"在法国外交官莱塞普推动下，苏伊士运河正式开工。这条190公里的运河将改变亚欧航运格局。\n\n建设历时十年，超过150万埃及工人参与，数千人丧生。1869年完工通航。\n\n运河开通使亚欧航程缩短约7000公里。列强对这条水道的争夺，直接影响了此后一个半世纪的中东地缘政治。",figures:[{name:"斐迪南·德·莱塞普",role:"法国外交官"}],impact:"改变了全球贸易路线。1956年苏伊士运河危机标志着英法帝国时代的终结。",insight:"基础设施是地缘政治最有力的工具。今天的海底光缆、芯片供应链、关键矿产——它们就是21世纪的「苏伊士运河」。",reading:["《苏伊士运河：人类野心的巨作》— 扎卡里·卡拉贝尔"]},
+  { month:5,day:4,year:"1919年",title:"五四运动——中国现代化的精神原点",description:"北京三千多名学生走上街头，抗议巴黎和会将德国在山东权益转让给日本。\n\n运动迅速扩展到全国。最终中国代表团拒绝在凡尔赛和约上签字。\n\n五四的意义远超外交抗议。它引入了「德先生」和「赛先生」，开启了白话文运动，催生了中国共产党。20世纪中国的走向，在这一天被根本性地改变了。",figures:[{name:"陈独秀",role:"新文化运动领袖"},{name:"蔡元培",role:"北大校长"},{name:"胡适",role:"思想家"}],impact:"中国从传统走向现代的转折点。催生了新文化运动高潮和中国共产党的成立。",insight:"当外部压力与内部变革诉求叠加时，历史往往会加速。今天AI技术革命叠加地缘政治重构，也可能催化出超出预期的社会变革。",reading:["《五四运动史》— 周策纵"]},
+  { month:5,day:14,year:"1796年",title:"詹纳接种牛痘——一个乡村医生拯救了数亿人",description:"英国乡村医生詹纳将牛痘脓液接种到8岁男孩身上。六周后用天花病毒检验——男孩安然无恙。疫苗就此诞生。\n\n詹纳的灵感来自民间观察：感染过牛痘的挤奶女工不会得天花。他没有实验室，没有显微镜，但用科学方法完成了医学史上最伟大的突破之一。\n\n天花成为人类唯一彻底消灭的传染病。疫苗至今已拯救超过5亿人。",figures:[{name:"爱德华·詹纳",role:"免疫学之父"}],impact:"开创了免疫学。此后的所有疫苗都是詹纳思路的延续。",insight:"颠覆性创新往往来自「局外人」。詹纳不是精英科学家，他的优势在于接近一线。最了解用户痛点的人，往往不是总部的高管，而是离客户最近的一线人员。",reading:["《疫苗的史诗》— 萨吕佐"]},
+  { month:5,day:29,year:"1453年",title:"君士坦丁堡陷落——千年帝国的终结",description:"奥斯曼苏丹穆罕默德二世率军攻陷拜占庭首都。末代皇帝战死城墙之上。延续1123年的东罗马帝国灭亡。\n\n穆罕默德二世使用了当时最先进的乌尔班大炮。古老城墙在炮火面前不堪一击。\n\n大量希腊学者携带古典文献逃往意大利，为文艺复兴注入了关键的知识燃料。",figures:[{name:"穆罕默德二世",role:"奥斯曼苏丹"},{name:"君士坦丁十一世",role:"末代皇帝"}],impact:"标志着中世纪结束。切断了欧洲通往东方的传统商路，直接推动了大航海时代。",insight:"技术代差可以瓦解任何传统优势。面对技术变革，唯一的选择是主动拥抱，而不是躲在旧体系的「城墙」后面。",reading:["《1453》— 斯蒂文·朗西曼","《征服者》— 罗杰·克劳利"]},
+  { month:6,day:6,year:"1944年",title:"诺曼底登陆——改变二战走向的最长一天",description:"盟军15万大军在诺曼底发动了人类历史上最大规模的两栖登陆。代号「霸王行动」。\n\n奥马哈海滩是人间炼狱——美军数小时内伤亡超过2000人。但盟军凭借空中优势和精心的欺骗计划最终站稳了脚跟。\n\n诺曼底打开了第二战场，德军陷入两线作战绝境。11个月后纳粹投降。",figures:[{name:"艾森豪威尔",role:"盟军最高统帅"},{name:"隆美尔",role:"德军指挥官"}],impact:"加速了纳粹覆灭，确立了美国在西方世界的领导地位。",insight:"诺曼底的成功不仅靠勇气，更靠精密的后勤和欺骗。盟军用充气坦克制造了假的「加来进攻计划」。真正的意图往往需要隐藏在噪音之中。",reading:["《最长的一天》— 科尼利厄斯·瑞恩"]},
+  { month:6,day:15,year:"1215年",title:"《大宪章》签署——王权之上还有法律",description:"英王约翰在贵族逼迫下签署了《大宪章》：国王不得未经同意而征税；自由人不得未经审判而被逮捕。\n\n约翰王签署后几周就试图废除它。但《大宪章》的精神已无法被废除。\n\n此后数百年，英国人一次次引用它来限制王权，最终发展出议会制度和法治精神。",figures:[{name:"约翰王",role:"英格兰国王"},{name:"史蒂芬·兰顿",role:"大主教"}],impact:"法治精神的源头文件。直接影响了美国宪法和《世界人权宣言》。",insight:"好的制度不是一蹴而就的。先建立基本框架，然后在实践中不断完善，比追求一步到位更有效。",reading:["《大宪章》— 丹·琼斯"]},
+  { month:6,day:28,year:"1914年",title:"萨拉热窝事件——一声枪响引爆世界大战",description:"波斯尼亚青年普林西普刺杀了奥匈帝国皇储。两颗子弹引发连锁反应。\n\n一个月内，大半个世界卷入战争。四年后，四个帝国灭亡，一千万士兵阵亡。",figures:[{name:"普林西普",role:"刺客"},{name:"斐迪南大公",role:"奥匈帝国皇储"}],impact:"一战摧毁了四大帝国，催生了苏联和美国的崛起，为二战埋下种子。",insight:"复杂系统中微小触发可以导致灾难性后果。1914年的欧洲像充满火药桶的房间。风险管理的核心不是预测黑天鹅，而是降低系统的脆弱性。",reading:["《梦游者》— 克里斯托弗·克拉克","《八月炮火》— 塔奇曼"]},
+  { month:7,day:4,year:"1776年",title:"美国独立宣言签署——「人人生而平等」",description:"大陆会议通过杰斐逊起草的《独立宣言》：「人人生而平等，造物主赋予他们不可剥夺的权利。」\n\n在君权神授的时代，这些话是革命性的。\n\n然而杰斐逊本人是蓄奴者。「人人平等」与奴隶制的矛盾，成为美国立国的原罪。",figures:[{name:"杰斐逊",role:"起草人"},{name:"富兰克林",role:"签署者"}],impact:"全球民主运动的源文本。法国《人权宣言》、联合国《世界人权宣言》都能追溯于此。",insight:"完美原则与不完美现实之间的张力，恰恰是进步的动力。好的愿景不需要立即实现，它的价值在于指引方向。",reading:["《美国创世纪》— 约瑟夫·埃利斯"]},
+  { month:7,day:14,year:"1789年",title:"攻占巴士底狱——自由、平等、博爱的代价",description:"巴黎市民攻占巴士底狱。狱中实际只有7名囚犯，但它的沦陷宣告了国王不再拥有不可挑战的权力。\n\n法国大革命由此全面爆发。国王上断头台，贵族制度被废除——但也有恐怖统治和独裁。",figures:[{name:"路易十六",role:"法国国王"},{name:"罗伯斯庇尔",role:"雅各宾派领袖"}],impact:"确立了「主权在民」原则。自由、平等、博爱成为全球民主运动的基石。",insight:"革命容易，建设难。法国从大革命到稳定民主经历了近170年。破坏的速度永远快于建设的速度。",reading:["《旧制度与大革命》— 托克维尔"]},
+  { month:7,day:20,year:"1969年",title:"阿波罗11号登月——人类的一大步",description:"阿姆斯特朗踏上月球：「这是一个人的一小步，却是人类的一大步。」\n\n这一刻背后是40万人历时8年的协作——人类历史上最大规模的单一目标导向项目。\n\n那一夜，全球6亿人通过电视直播见证了这个时刻——国界变得无关紧要。",figures:[{name:"阿姆斯特朗",role:"第一个登月者"},{name:"奥尔德林",role:"登月舱驾驶员"}],impact:"改变了人类自我认知，催生了大量民用技术。证明了人类协作的极限。",insight:"肯尼迪提出目标时NASA还不确定物理上是否可行。先设定「不可能」的目标然后倒推路径，比渐进式改良更有效。这就是「登月思维」。",reading:["纪录片《阿波罗11号》(2019)"]},
+  { month:8,day:6,year:"1945年",title:"广岛原子弹——人类第一次拥有毁灭自己的能力",description:"美国在广岛投下原子弹。一瞬间7万人死亡，到年底增至14万。人类第一次在战争中使用核武器。\n\n三天后长崎，六天后日本投降。\n\n至今仍是最具争议的军事决策之一。",figures:[{name:"杜鲁门",role:"下令投弹的总统"},{name:"奥本海默",role:"曼哈顿计划总监"}],impact:"核时代开始。「相互确保毁灭」成为大国关系的基本逻辑。",insight:"当一项技术的破坏力超过人类的治理能力时，就需要全新的规则。今天的AI技术正在逼近类似的临界点。",reading:["《奥本海默传》— 凯·伯德","《广岛》— 约翰·赫西"]},
+  { month:8,day:15,year:"1947年",title:"印度独立——非暴力如何击败帝国",description:"午夜钟声响起，印度脱离英国殖民统治。但独立的喜悦被分治的悲痛笼罩——约1500万人流动，数十万人死于宗教冲突。\n\n甘地为之奋斗一生的统一印度最终还是分裂了。五个月后他被暗杀。",figures:[{name:"甘地",role:"非暴力运动领袖"},{name:"尼赫鲁",role:"首任总理"}],impact:"开启了亚非拉殖民地独立的连锁反应。甘地的哲学影响了金和曼德拉。",insight:"弱者的力量可以来自道德高地而非武力。有时候不参与某种竞争本身就是最有力的竞争姿态。",reading:["《甘地自传》","《午夜之子》— 拉什迪"]},
+  { month:8,day:28,year:"1963年",title:"「我有一个梦想」——言语改变历史",description:"25万人聚集在林肯纪念堂前。马丁·路德·金的演讲同时诉诸理性和情感，将民权运动定义为「兑现美国承诺」而非颠覆制度。\n\n一年后《民权法案》通过，两年后《投票权法案》签署。",figures:[{name:"马丁·路德·金",role:"民权领袖"}],impact:"从法律上结束了美国的种族隔离制度。",insight:"金选择非暴力不是因为软弱，而是深知暴力会给当权者镇压的口实。在任何变革中，「如何争取中间力量」比「如何打败对手」更重要。",reading:["《马丁·路德·金自传》"]},
+  { month:9,day:11,year:"2001年",title:"9·11事件——21世纪的开端",description:"四架客机被劫持。两架撞向世贸中心，一架撞入五角大楼，一架坠毁。近3000人丧生。\n\n双塔坍塌不仅是建筑的倒塌，也是冷战后乐观情绪的终结。\n\n此后美国发动了阿富汗战争和伊拉克战争。",figures:[{name:"本·拉登",role:"基地组织领导人"},{name:"布什",role:"美国总统"}],impact:"重塑了全球安全格局。自由与安全之间的平衡被永久性调整。",insight:"过度反应有时比威胁本身造成更大伤害。在危机面前保持冷静判断，是领导力最艰难的考验。",reading:["《巨塔杀机》— 劳伦斯·赖特"]},
+  { month:10,day:1,year:"1949年",title:"中华人民共和国成立——中国重新站起来",description:"毛泽东在天安门宣告新中国成立。经历百年屈辱后，中国翻开了新的一页。\n\n但建国只是起点。此后的土地改革、工业化、政治运动和改革开放，每一步都在回答：一个古老的农业大国如何实现现代化？",figures:[{name:"毛泽东",role:"缔造者"},{name:"周恩来",role:"首任总理"}],impact:"根本性地改变了亚洲和全球的地缘政治格局。",insight:"最难的不是推翻旧体制，而是建立新秩序。中国花了近三十年和巨大代价才找到适合的发展道路。变革的成本往往被低估，耐心和学习能力才是最终胜出的关键。",reading:["《邓小平时代》— 傅高义"]},
+  { month:10,day:12,year:"1492年",title:"哥伦布抵达新大陆——全球化的第一天",description:"哥伦布的船队航行70天后看到陆地。他踏上巴哈马群岛，以为到了印度。\n\n他的航行打通了两个世界的通道，触发了人类历史上最大规模的物种交换和文明碰撞。\n\n但对美洲原住民而言，这意味着殖民、疾病和种族灭绝。",figures:[{name:"哥伦布",role:"探险家"},{name:"伊莎贝拉一世",role:"西班牙女王"}],impact:"开启了「大交换时代」。美洲的土豆、玉米传入旧大陆。全球化正式开始。",insight:"每一次「发现」都有两面性。AI带来巨大生产力提升，但也可能导致大规模就业替代。站在不同群体角度审视同一个「进步」，是做出平衡决策的前提。",reading:["《1493》— 查尔斯·曼恩"]},
+  { month:10,day:24,year:"1929年",title:"黑色星期四——华尔街崩盘与大萧条序幕",description:"纽约证交所经历了史上最恐慌的抛售潮。根源是1920年代的投机泡沫——借钱炒股、过度放贷、估值脱离现实。\n\n大萧条持续十年。美国失业率25%，全球贸易萎缩65%。为二战埋下伏笔。",figures:[{name:"胡佛",role:"美国总统"},{name:"J.P.摩根",role:"金融巨头"}],impact:"直接导致了罗斯福新政和凯恩斯经济学的兴起。",insight:"杠杆放大收益也放大灾难。1929年的教训在2008年几乎原样重演。每当所有人都觉得「这次不一样」时，往往就是最危险的时刻。",reading:["《大崩盘1929》— 加尔布雷斯"]},
+  { month:11,day:9,year:"1989年",title:"柏林墙倒塌——冷战的最后一幕",description:"东德宣布开放边境后，数万人涌向柏林墙，用铁锤和双手拆除了这堵分隔28年的水泥墙。\n\n柏林墙的倒塌不是武装革命，而是一系列微小决定累积的结果——包括那个著名的「口误」：发言人错误宣布边境「立即开放」。\n\n几小时内历史不可逆转。一年后两德统一，两年后苏联解体。",figures:[{name:"戈尔巴乔夫",role:"苏联最后的领导人"},{name:"科尔",role:"西德总理"}],impact:"引发东欧剧变和苏联解体，终结两极格局，开启全球化黄金时代。",insight:"看似坚不可摧的体制可以一夜崩塌。柏林墙不是被军事力量推倒的，而是被信息流动和人心思变瓦解的。",reading:["《柏林墙》— 弗雷德里克·泰勒"]},
+  { month:11,day:28,year:"1520年",title:"麦哲伦穿越海峡——地球是圆的，不再是猜想",description:"麦哲伦率船队穿越南美最南端海峡，进入一片平静的大洋，命名为「太平洋」。\n\n海峡耗时38天，船队从五艘减到三艘。麦哲伦1521年在菲律宾阵亡，但副手埃尔卡诺完成了环球航行。\n\n地球确实是圆的。",figures:[{name:"麦哲伦",role:"探险家"},{name:"埃尔卡诺",role:"完成环球航行的副手"}],impact:"证实了地球是球体，打通了太平洋航线，将三大洲连成完整贸易网络。",insight:"突破性成就需要「不合理」的执着。但执着与固执只有一线之隔。如何在坚持愿景的同时保持策略灵活性，是永恒课题。",reading:["《麦哲伦传》— 茨威格"]},
+  { month:12,day:1,year:"1955年",title:"罗莎·帕克斯拒绝让座——一个人的勇气引发一场革命",description:"42岁的黑人女裁缝帕克斯在公交车上拒绝为白人让座，被逮捕。\n\n此后马丁·路德·金领导了381天的公交抵制运动。1956年最高法院裁定公交种族隔离违宪。",figures:[{name:"帕克斯",role:"民权先驱"},{name:"马丁·路德·金",role:"抵制运动领袖"}],impact:"美国民权运动的起点。证明了非暴力经济抵制的力量。",insight:"帕克斯的勇气是必要条件，但背后的组织网络、法律策略和经济杠杆才是充分条件。仅有热情不够，还需要策略和可持续的行动方案。",reading:["《帕克斯自传》"]},
+  { month:12,day:17,year:"1903年",title:"莱特兄弟首飞——12秒改变人类文明",description:"自行车修理工莱特兄弟驾驶自制飞机完成了人类第一次有动力可控飞行。12秒，37米。\n\n他们系统研究了鸟类飞行、建造风洞、设计了创新的控制系统。在资金远不如竞争对手的情况下凭借工程思维胜出。\n\n66年后人类登上了月球。",figures:[{name:"威尔伯·莱特",role:"发明者"},{name:"奥维尔·莱特",role:"发明者"}],impact:"动力飞行在几十年内彻底改变了战争、贸易和生活方式。",insight:"莱特兄弟击败资金充裕的兰利教授，证明了「迭代速度 > 资源优势」。低成本、高频率试验不断调整——这正是精益创业的核心理念。",reading:["《飞翔之梦》— 大卫·麦卡洛"]},
+  { month:12,day:25,year:"1991年",title:"苏联解体——一个超级大国的静默消亡",description:"圣诞夜，戈尔巴乔夫辞职。克里姆林宫苏联国旗被降下。存在69年的苏联正式解体。\n\n没有战争、没有革命。15个加盟共和国独立建国。\n\n最根本的原因：一个体制丧失了自我纠错和适应变化的能力。",figures:[{name:"戈尔巴乔夫",role:"末代领导人"},{name:"叶利钦",role:"俄罗斯首任总统"}],impact:"冷战结束。重绘了欧亚版图，也为北约东扩和俄乌冲突埋下伏笔。",insight:"一个系统如果失去了自我纠错能力，即使再强大也终将崩溃。诺基亚、柯达的衰落，在本质上与苏联解体有相似逻辑。",reading:["《二手时间》— 阿列克谢耶维奇"]},
+];  // END_EVENTS
+
+const QUOTES = [
+  {t:"以铜为鉴，可以正衣冠；以人为鉴，可以明得失；以史为鉴，可以知兴替。",a:"李世民"},
+  {t:"忘记历史的人注定要重蹈覆辙。",a:"乔治·桑塔亚那"},
+  {t:"历史不会重复，但会押韵。",a:"马克·吐温"},
+  {t:"读史使人明智，读诗使人灵秀。",a:"弗朗西斯·培根"},
+  {t:"一切历史都是当代史。",a:"克罗齐"},
+  {t:"人们从历史中学到的唯一教训，就是人们从不从历史中吸取教训。",a:"黑格尔"},
+];
+
+/* ─── Helpers ─── */
+function getNearestEvent(m, d) {
+  const exact = EVENTS.filter(e => e.month === m && e.day === d);
+  if (exact.length > 0) return { evs: exact, exact: true };
+  const t = m * 31 + d;
+  let best = null, bd = Infinity;
+  EVENTS.forEach(e => { const ed = e.month * 31 + e.day; let dist = Math.abs(ed - t); dist = Math.min(dist, 365 - dist); if (dist < bd) { bd = dist; best = e; }});
+  return { evs: [best], exact: false };
+}
+
+const WK = ['日','一','二','三','四','五','六'];
+const MZH = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
+
+/* ─── SVG Icons (consistent 1.8px stroke) ─── */
+const I = {
+  hourglass: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"/><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/></svg>,
+  scroll: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M8 21h12a2 2 0 0 0 2-2v-2H10v2a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v3h4"/><path d="M19 3H9v7h12V5a2 2 0 0 0-2-2z"/></svg>,
+  user: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+  zap: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>,
+  bulb: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></svg>,
+  book: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>,
+  cal: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>,
+};
+function Ic({name, w=14, h=14}) { return <span style={{width:w,height:h,display:'inline-flex'}}>{I[name]}</span>; }
+
+/* ─── Calendar ─── */
+function Calendar({ today }) {
+  const y = today.getFullYear(), m = today.getMonth() + 1, td = today.getDate();
+  const dim = new Date(y, m, 0).getDate();
+  const first = new Date(y, m - 1, 1).getDay();
+  const prev = new Date(y, m - 1, 0).getDate();
+  const evDays = new Set(EVENTS.filter(e => e.month === m).map(e => e.day));
+
+  const cells = [];
+  for (let i = first - 1; i >= 0; i--) cells.push({ d: prev - i, c: 'dim' });
+  for (let d = 1; d <= dim; d++) {
+    let c = d === td ? 'now' : evDays.has(d) ? 'ev' : '';
+    cells.push({ d, c });
+  }
+  const rem = 7 - (cells.length % 7);
+  if (rem < 7) for (let i = 1; i <= rem; i++) cells.push({ d: i, c: 'dim' });
+
+  return (
+    <div className="cal-card anim-scale" style={{animationDelay:'100ms'}}>
+      <div className="cal-rings">
+        {[0,1,2,3,4,5,6,7].map(i=><div className="cal-ring" key={i}/>)}
+      </div>
+      <div className="cal-head">
+        <div className="cal-title">{MZH[m-1]}</div>
+        <div className="cal-sub">{y}</div>
+      </div>
+      <div className="cal-body">
+        <div className="cal-wk">{WK.map(w=><span key={w}>{w}</span>)}</div>
+        <div className="cal-days">
+          {cells.map((c,i) => <div key={i} className={`cal-d ${c.c}`}>{c.d}</div>)}
+        </div>
+      </div>
+      <div className="cal-tear"/>
+    </div>
+  );
+}
+
+/* ─── Event Content ─── */
+function EventContent({ ev, exact }) {
+  const ps = ev.description.split('\n').filter(p => p.trim());
+  return (
+    <div className="content">
+      {!exact && <div className="hint-banner anim-up">今天暂无精确匹配，为你推荐最近的一篇</div>}
+
+      <div className="anim-up" style={{animationDelay:'200ms',marginBottom:40}}>
+        <div className="overline">TODAY IN HISTORY</div>
+        <div className="ev-badge"><Ic name="cal" w={12} h={12}/> {ev.year}年 · {ev.month}月{ev.day}日</div>
+        <h1 className="ev-title">{ev.title}</h1>
+        <div className="ev-divider"/>
+      </div>
+
+      <div className="sec anim-up" style={{animationDelay:'300ms'}}>
+        <div className="sec-label"><Ic name="scroll"/> NARRATIVE</div>
+        <div className="sec-body">{ps.map((p,i)=><p key={i}>{p}</p>)}</div>
+      </div>
+
+      <div className="sec anim-up" style={{animationDelay:'400ms'}}>
+        <div className="sec-label"><Ic name="user"/> KEY FIGURES</div>
+        <div className="figs">{ev.figures.map((f,i)=><span className="fig" key={i}>{f.name} <span className="role">{f.role}</span></span>)}</div>
+      </div>
+
+      <div className="sec anim-up" style={{animationDelay:'500ms'}}>
+        <div className="sec-label"><Ic name="zap"/> CHAIN REACTION</div>
+        <div className="sec-body"><p>{ev.impact}</p></div>
+      </div>
+
+      <div className="sec anim-up" style={{animationDelay:'600ms'}}>
+        <div className="sec-label"><Ic name="bulb"/> INSIGHT</div>
+        <div className="insight"><p>{ev.insight}</p></div>
+      </div>
+
+      <div className="sec anim-up" style={{animationDelay:'700ms'}}>
+        <div className="sec-label"><Ic name="book"/> FURTHER READING</div>
+        <div className="reads">{ev.reading.map((r,i)=>(
+          <div className="read-item" key={i}>
+            <div className="read-icon"><Ic name="book" w={16} h={16}/></div>
+            <span className="read-text">{r}</span>
+          </div>
+        ))}</div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── App ─── */
+function App() {
+  const today = new Date();
+  const m = today.getMonth()+1, d = today.getDate(), wd = WK[today.getDay()];
+  const { evs, exact } = useMemo(() => getNearestEvent(m, d), []);
+  const [idx, setIdx] = React.useState(0);
+  const ev = evs[idx];
+  const quote = useMemo(() => QUOTES[today.getDate() % QUOTES.length], []);
+  const dateStr = `${today.getFullYear()}年${m}月${d}日 · 星期${wd}`;
+
+  return (<>
+    <header className="header">
+      <div className="header-inner">
+        <div className="logo">
+          <div className="logo-mark"><Ic name="hourglass" w={18} h={18}/></div>
+          <span className="logo-text">History Tells</span>
+        </div>
+        <span className="header-date">{dateStr}</span>
+      </div>
+    </header>
+
+    <div className="main-grid">
+      <aside className="sidebar">
+        <Calendar today={today}/>
+        <div className="quote-card anim-scale" style={{animationDelay:'250ms'}}>
+          <p className="qt">「{quote.t}」</p>
+          <p className="qa">—— {quote.a}</p>
+        </div>
+        <div className="stats anim-scale" style={{animationDelay:'400ms'}}>
+          <div className="stat"><div className="stat-n">{EVENTS.length}</div><div className="stat-l">收录事件</div></div>
+          <div className="stat"><div className="stat-n">{new Set(EVENTS.map(e=>e.month)).size}</div><div className="stat-l">覆盖月份</div></div>
+        </div>
+      </aside>
+
+      <main>
+        {ev ? (
+          <>
+            {evs.length > 1 && (
+              <div className="anim-up" style={{display:'flex',gap:8,marginBottom:24,flexWrap:'wrap'}}>
+                {evs.map((e,i) => (
+                  <button key={i} onClick={()=>setIdx(i)} style={{
+                    padding:'5px 16px', borderRadius:20, cursor:'pointer',
+                    border:`1px solid ${i===idx?'var(--accent)':'var(--border)'}`,
+                    background: i===idx?'var(--accent-bg)':'transparent',
+                    fontFamily:'var(--sans)', fontSize:12,
+                    color: i===idx?'var(--accent)':'var(--text-muted)',
+                    transition:'all 0.15s'
+                  }}>{e.year}</button>
+                ))}
+              </div>
+            )}
+            <EventContent ev={ev} exact={exact}/>
+          </>
+        ) : (
+          <div className="empty anim-up">
+            <div className="empty-icon"><Ic name="scroll" w={28} h={28}/></div>
+            <h3>暂无收录</h3><p>这一天的历史事件正在整理中</p>
+          </div>
+        )}
+      </main>
+    </div>
+
+    <footer className="footer">
+      <p>History Tells — 以史鉴今 · 每日一课</p>
+    </footer>
+  </>);
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

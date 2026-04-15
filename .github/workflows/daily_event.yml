@@ -1,0 +1,47 @@
+name: Daily History Event
+
+on:
+  schedule:
+    # 22:00 UTC = 北京时间 06:00（次日）
+    - cron: '0 22 * * *'
+  workflow_dispatch: # 支持手动触发，方便测试
+
+permissions:
+  contents: write # 允许 push commit
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install openai
+
+      - name: Generate and inject event
+        env:
+          GLM_API_KEY: ${{ secrets.GLM_API_KEY }}
+        run: python scripts/generate_event.py
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name  "History Tells Bot"
+          git config user.email "bot@history-tells.app"
+          if git diff --quiet; then
+            echo "无变更，事件已存在或脚本跳过。"
+          else
+            git add index.html
+            git commit -m "auto: add $(date -u +%m/%d) historical event [skip ci]"
+            git push
+          fi
